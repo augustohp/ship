@@ -1,0 +1,116 @@
+#!/usr/bin/env sh
+# vim: set noet ts=2 sw=2 ft=sh sts=2 ai:
+#
+# Aids you creating Dockerfile by adding their history
+# as RUN instructions.
+#
+# Author: Augusto Pascutti <augusto.hp+oss@gmail.com>
+#
+# TODO: Parse all existing options
+# TODO: Support "ash" and "bash" history
+# TODO: Support different docker images
+# TODO: Option to force recreation of Dockerfile
+# TODO: Git ignores the `OPTION_CHOME` directory
+
+PROGRAM_NAME=$(basename $0)
+PROGRAM_VERSION=${PROGRAM_VERSION:-"1.0.0"}
+
+OPTION_CHOME=".ship"
+OPTION_IMAGE="alpine:latest"
+OPTION_DOCKERFILE="Dockerfile"
+OPTION_CMD="sh"
+
+DOCKER=$(command -v docker)
+
+trap cleanup 0 1 2 3 6
+cleanup()
+{
+	rm -rf "${OPTION_CHOME}"
+}
+
+# Usage: display_help
+display_help()
+{
+	cat <<-EOT
+	Usage: $PROGRAM_NAME [-o <filename>] [-c <command>] [-f] [image]
+	       $PROGRAM_NAME <-h | --help>
+	       $PROGRAM_NAME <-v | --version>
+
+	Eases the creation of a Dockerfile by transforming the history
+	into RUN instructions.
+
+	Arguments:
+
+	  image                    The name of Dockerimage to be executed. 
+	                           The image must have bash installed.
+	                           Default: ${OPTION_IMAGE}.
+
+	Options:
+
+	  -o | --out <filename>    The name of the Dockerfile to be creared.
+	                           Default: ${OPTION_DOCKERFILE}.
+	  -c | --command <cmd>     The shell command to execute.
+	                           Default: ${OPTION_CMD}.
+	  -f | --force             Re-creates ${OPTION_DOCKERFILE} if it
+	                           already exists.
+	EOT
+}
+
+
+# Usage: inspect_image <inspection>
+# Example: inspect_image alpine:3.10 whomai
+inspect_image()
+{
+	inspection="${*:1}"
+
+	$DOCKER run \
+		--rm \
+		"${OPTION_IMAGE}" \
+		"${inspection}"
+}
+
+# Usage: main
+main()
+{
+	user=$(inspect_image 'whoami')
+	if [ "$user" = "root" ]
+	then 
+		home="/root"
+	else
+		home="/home/${user}"
+	fi
+
+	container_home="${PWD}/${OPTION_CHOME}"
+	$DOCKER run \
+		--rm \
+		--name "ship-generating-dockerfile" \
+		-it \
+		-v "${container_home}:${home}" \
+		"${OPTION_IMAGE}" \
+		"${OPTION_CMD}"
+	echo
+	while read line
+	do
+		echo "RUN ${line}" >> "${OPTION_DOCKERFILE}"
+	done < "${container_home}/.ash_history"
+	echo "${OPTION_DOCKERFILE} writeen successfully!"
+}
+
+while :;
+do
+	if [ $# -eq 0 ]
+	then 
+		break
+	fi
+
+	case "$1" in
+		-h|--help)
+			display_help
+			exit 0
+			;;
+	esac
+	shift
+done
+
+main
+
