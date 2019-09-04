@@ -8,9 +8,7 @@ Let's create a new image, on an existing repository, to install [bash][]:
     container $ exit
     Dockerfile written successfully!
     host      $ cat Dockerfile
-    # Created using https://github.com/augustohp/shell-dock
     FROM alpine:latest
-    LABEL maintainer="John Doe <john@example.org>"
 
     RUN apk add --no-cache bash
 
