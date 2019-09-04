@@ -1,0 +1,13 @@
+name: Continous Integration
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Lint
+      run: make lint
+    - name: Test
+      run: make test
+
