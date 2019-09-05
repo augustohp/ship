@@ -20,7 +20,7 @@ OPTION_FORCE_RECREATION=""
 OPTION_SHELL_TEST="bash ash"
 
 ENTRYPOINT="main"
-GIT=$(command -v GIT)
+GIT=$(command -v git)
 DOCKER=$(command -v docker)
 
 if [ -n "$DEBUG" ] 
