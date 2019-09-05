@@ -37,7 +37,7 @@ you. An easy one-line install is available through [sinister][]:
 
 [sinister]: https://github.com/jamesqo/sinister
 
-	sh <(curl -sSL http://git.io/sinister) --local --chmod 755 --url https://git.io/fjhO5
+	sh <(curl -sSL https://git.io/fjjvu) --name ship --local --chmod 755 --url https://git.io/fjhO5
 
 The above one-liner will install the script just for the current user. If you
 want it globally, remove `--local` option.
