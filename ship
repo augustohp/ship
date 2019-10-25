@@ -23,7 +23,7 @@ ENTRYPOINT="main"
 GIT=$(command -v git)
 DOCKER=$(command -v docker)
 
-if [ -n "$DEBUG" ] 
+if [ -n "$DEBUG" ]
 then
 	set -x
 fi
@@ -53,7 +53,7 @@ display_help()
 	into RUN instructions.
 
 	Arguments:
-	  image                    The name of Dockerimage to be executed. 
+	  image                    The name of Dockerimage to be executed.
 	                           The image must have bash installed.
 	Options:
 	  -o | --out <filename>    The name of the Dockerfile to be creared.
@@ -115,13 +115,13 @@ main()
 {
 	if [ -z "${OPTION_IMAGE}" ]
 	then
-		echo "No image specified! Run 'ship --help' for more information." 
+		echo "No image specified! Run 'ship --help' for more information."
 		return 1
 	fi
 
 	user=$(inspect_image 'whoami')
 	if [ "$user" = "root" ]
-	then 
+	then
 		home="/root"
 	else
 		home="/home/${user}"
@@ -148,8 +148,8 @@ main()
 		--name "ship-generating-dockerfile" \
 		-it \
 		-e "HISTSIZE=10000" \
-		-e 'HISTCONTROL="erasedups:ignoreboth"' \
-		-e 'HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"' \
+		-e 'HISTCONTROL=erasedups:ignoreboth' \
+		-e 'HISTIGNORE=&:[ ]*:exit:ls:bg:fg:history:clear' \
 		-v "${container_home}:${home}" \
 		-v "${PWD}:/home/developer" \
 		"${OPTION_IMAGE}" \
@@ -187,7 +187,7 @@ main()
 while :;
 do
 	if [ $# -eq 0 ]
-	then 
+	then
 		break
 	fi
 
